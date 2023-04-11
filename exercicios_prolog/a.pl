@@ -1,3 +1,17 @@
+pessoa(joana).
+pessoa(joao).
+pessoa(jorge).
+pessoa(jose).
+pessoa(jadir).
+pessoa(maria).
+pessoa(segatto).
+pessoa(anselmo).
+pessoa(jamir).
+pessoa(jacir).
+pessoa(mariana).
+pessoa(mariele).
+pessoa(marlene).
+
 genitor(joana,joao).
 genitor(joao,jose).
 genitor(joao,maria). 
@@ -25,9 +39,15 @@ net_(X, Y) :-
     dif(X, Y).
 
 %% Item 4) %%
-descendente(X, Y) :-
-    dif(X, Y),
-    (   
-    	genitor(Y, X);
-    	genitor(Y, Z)
-    ).
+descendente(X, Z) :-
+    genitor(X, Z).
+
+descendente(X, Z) :-
+    genitor(X, Y),
+    descendente(Y, Z).
+
+solteirxs(X) :-
+    pessoa(X),
+    \+ ( casadxs(X, _) ; casadxs(_, X)).
+
+filhx_unicx(X) :-asd
