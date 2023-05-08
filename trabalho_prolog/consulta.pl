@@ -3,6 +3,7 @@
                        WHERE
                        { ?personagem <http://dbpedia.org/ontology/series> <http://dbpedia.org/resource/A_Song_of_Ice_and_Fire>.
                          ?personagem <http://dbpedia.org/property/name> ?nome.
+                         
                          ?parente <http://dbpedia.org/ontology/child> ?personagem.
                          ?parente <http://dbpedia.org/ontology/spouse> ?conjugue.
                          ?conjugue <http://dbpedia.org/property/name> ?nomeconjugue.

@@ -20,3 +20,38 @@ where {
      ?conjuguepai dbp:name ?conjuguepainome.
      ?pais dbp:name ?nomepai.
 }
+
+
+SELECT DISTINCT ?nome ?nomeparente ?nomeconjugue
+WHERE
+{
+{?personagem <http://dbpedia.org/ontology/series> <http://dbpedia.org/resource/A_Song_of_Ice_and_Fire>.}
+UNION
+{<http://dbpedia.org/resource/List_of_Game_of_Thrones_characters> <http://dbpedia.org/ontology/wikiPageWikiLink> ?personagem.}
+
+{?personagem <http://dbpedia.org/property/name> ?nome.}
+UNION
+{?personagem <http://www.w3.org/2000/01/rdf-schema#label> ?nome}
+
+{?parente <http://dbpedia.org/ontology/child> ?personagem.}
+UNION
+{?parente <http://dbpedia.org/property/children> ?personagem}
+UNION
+{?parente <http://dbpedia.org/ontology/child> ?personagem}
+
+{?parente <http://dbpedia.org/ontology/spouse> ?conjugue.}
+UNION
+{?parente <http://dbpedia.org/property/spouses> ?conjugue.}
+
+{?parente <http://dbpedia.org/property/name> ?nomeparente.}
+UNION
+{?parente <http://www.w3.org/2000/01/rdf-schema#label> ?nomeparente.}
+
+{?conjugue <http://dbpedia.org/property/name> ?nomeconjugue.}
+UNION
+{?conjugue <http://www.w3.org/2000/01/rdf-schema#label> ?nomeconjugue.}.
+
+FILTER(LANG(?nome) = "en" AND ?nome != "Prince"@en AND ?nome != "Princess"@en)
+FILTER(LANG(?nomeparente) = "en" AND ?nomeparente != "Prince"@en AND ?nomeparente != "Princess"@en)
+FILTER(LANG(?nomeconjugue) = "en" AND ?nomeparente != "Prince"@en AND ?nomeparente != "Princess"@en)
+}
