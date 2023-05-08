@@ -10,3 +10,13 @@ where {
     FILTER(?filhos != ''@en and ?filhos != 'Television:'@en and ?filhos != 'Novels:'@en)
     FILTER(?conjugues != 'Novels:'@en and ?conjugues != ''@en)
 }
+
+select ?nome ?nomepai ?conjuguepainome
+where {
+     ?personagem dbo:series <http://dbpedia.org/resource/A_Song_of_Ice_and_Fire>.
+     ?personagem dbp:name ?nome.
+     ?pais dbo:child ?personagem.
+     ?pais dbo:spouse ?conjuguepai.
+     ?conjuguepai dbp:name ?conjuguepainome.
+     ?pais dbp:name ?nomepai.
+}
