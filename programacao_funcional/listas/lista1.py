@@ -54,6 +54,50 @@ def minimax(l: list[int]) -> tuple[int, int]:
 def verfica_possibilidade(mov: int, pos: tuple[int, int]) -> bool:
     match mov:
         case 1:
-            return True
+            if pos[0] <= 6 and pos[1] >= 2:
+                return True
+            else:
+                return False
+        case 2:
+            if pos[0] <= 7 and pos[1] >= 3:
+                return True
+            else:
+                return False
+        case 3:
+            if pos[0] >= 2 and pos[1] >= 3:
+                return True
+            else:
+                return False
+        case 4:
+            if pos[0] >= 3 and pos[1] >= 2:
+                return True
+            else:
+                return False
+        case 5:
+            if pos[0] >= 3 and pos[1] <= 7:
+                return True
+            else:
+                return False
+        case 6:
+            if pos[0] >= 2 and pos[1] <= 6:
+                return True
+            else:
+                return False
+        case 7:
+            if pos[0] <= 7 and pos[1] <= 6:
+                return True
+            else:
+                return False
+        case 8:
+            if pos[0] >= 3 and pos[1] >= 2:
+                return True
+            else:
+                return False
         case other:
             return False
+        
+def movPossivel(pos: tuple[int, int]) -> int:
+    return [x for x in filter(lambda x: x[1] == True, [x for x in map(lambda x: (x, verfica_possibilidade(x, pos)), [x for x in range(1, 9)])])][0][0]
+
+def possivelEliminar(posCav: tuple[int, int], outraPeca: tuple[int, int]) -> bool:
+    return (abs(posCav[0] - outraPeca[0]) <= 1 and abs(posCav[1] - outraPeca[1]) <= 1) or (posCav[0] == outraPeca[0] and abs(posCav[1] - outraPeca[1]) <= 2) or (posCav[1] == outraPeca[1] and abs(posCav[0] - outraPeca[0]) <= 2)
