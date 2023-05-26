@@ -17,7 +17,7 @@
 % Obs: a palavra "parente" foi usada como traducao para "parent" do ingles,
 % mesmo nao significando a mesma coisa em portugues, pois torna as queries mais legiveis
 :- data_source(personagens,
-    sparql(
+    sparql
         "SELECT DISTINCT ?nome ?nomeparente ?nomeconjugue
         WHERE{
             # Seleciona o URI de todos os personagens da pagina principal da CGF
