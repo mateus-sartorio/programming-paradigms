@@ -57,18 +57,18 @@ def doac2(): return [(36167, 'F', (12, 8, 2010), (21, 9, 1952), 'B', '-', 500), 
 def req1(): return [(1,'A','+',850),(1,'O','+',250),(2,'O','-',500)]
 
 ### 1. ###
-def tupla_para_date(data: tuple[int, int, int]) -> date:
-    return date(data[2], data[1], data[0])
-
-def idade(data_atual: tuple[int, int, int], nascimento: tuple[int, int, int]) -> int:
-    return tupla_para_date(data_atual).year - tupla_para_date(nascimento).year - ((tupla_para_date(data_atual).month, tupla_para_date(data_atual).day) < (tupla_para_date(nascimento).month, tupla_para_date(nascimento).day))
-
-def tempo_decorrido(data_atual: tuple[int, int, int], dia: tuple[int, int, int]) -> int:
-    return (tupla_para_date(data_atual) - tupla_para_date(dia)).days
-
 def doadores_aptos_nova_doacao(doadores: list[tuple[int, str, tuple[int, int, int], tuple[int, int, int], str, str, int]], data_atual: tuple[int, int, int]) -> list[tuple[int, tuple[int, int, int], tuple[int, int, int]]]:
+    def tupla_para_date(data: tuple[int, int, int]) -> date:
+        return date(data[2], data[1], data[0])
+
+    def idade(data_atual: tuple[int, int, int], nascimento: tuple[int, int, int]) -> int:
+        return tupla_para_date(data_atual).year - tupla_para_date(nascimento).year - ((tupla_para_date(data_atual).month, tupla_para_date(data_atual).day) < (tupla_para_date(nascimento).month, tupla_para_date(nascimento).day))
+
+    def tempo_decorrido(data_atual: tuple[int, int, int], dia: tuple[int, int, int]) -> int:
+        return (tupla_para_date(data_atual) - tupla_para_date(dia)).days
+    
     def apto(doador: tuple[int, str, tuple[int, int, int], tuple[int, int, int], str, str, int]) -> bool:
-        if idade(data_atual, doador[3]) > 60:
+        if idade(data_atual, doador[3]) >= 60:
             return False
         elif (doador[1] == "F") and (tempo_decorrido(data_atual, doador[2]) >= 90):
             return True
@@ -100,8 +100,8 @@ def mais_doacoes_ano(doadores: list[tuple[int, str, tuple[int, int, int], tuple[
 # print(mais_doacoes_ano(doac2(),2010))
 
 ### 4. ###
-def demanda_tipo_sangue(demanda: list[tuple[int, str, str, int]], hospital: int):
-    def incrementa_demanda(d: list[int], z: tuple[int, str, str, int]):
+def demanda_tipo_sangue(demanda: list[tuple[int, str, str, int]], hospital: int) -> list[tuple[str, str, int]]:
+    def incrementa_demanda(d: list[int], z: tuple[int, str, str, int]) -> list[int]:
         def incrementa_indice(v: list[int], i: int, incremento: int) -> list[int]:
             return list(map(lambda x: x[1] + incremento if x[0] == i else x[1], enumerate(v)))
         
@@ -123,8 +123,10 @@ def demanda_tipo_sangue(demanda: list[tuple[int, str, str, int]], hospital: int)
             return incrementa_indice(d, 6, z[3])
         elif z[1] == 'O' and z[2] == '-':
             return incrementa_indice(d, 7, z[3])
+        else:
+            return d
     
-    def mapeia(e):
+    def mapeia(e: tuple[int, int]) -> tuple[str, str, int]:
         match e[0]:
             case 0:
                 return ('A', '+', e[1])
@@ -142,6 +144,8 @@ def demanda_tipo_sangue(demanda: list[tuple[int, str, str, int]], hospital: int)
                 return ('O', '+', e[1])
             case 7:
                 return ('O', '-', e[1])
+            case _:
+                raise Exception("Tupla nao fornecida")
     
     return list(map(mapeia, enumerate(reduce(incrementa_demanda, demanda, [0]*8))))
 
@@ -149,5 +153,46 @@ def demanda_tipo_sangue(demanda: list[tuple[int, str, str, int]], hospital: int)
 # print(demanda_tipo_sangue(req1(), 2))
 
 ### 5. ###
-def tipos_sang_atendidos():
-    
+def tipos_sang_atendidos(requisicao: list[tuple[int, str, str, int]], hospital: int, doacoes: list[tuple[int, str, tuple[int, int, int], tuple[int, int, int], str, str, int]]) -> list[tuple[str, str, int, int]]:
+    def incrementa_oferta(oferta: list[int], doacao: tuple[int, str, tuple[int, int, int], tuple[int, int, int], str, str, int]) -> list[int]:
+        def incrementa_indice(v: list[int], i: int, incremento: int) -> list[int]:
+            return list(map(lambda x: x[1] + incremento if x[0] == i else x[1], enumerate(v)))
+        
+        if doacao[4] == 'A' and doacao[5] == '+':
+            return incrementa_indice(oferta, 0, doacao[6])
+        elif doacao[4] == 'A' and doacao[5] == '-':
+            return incrementa_indice(oferta, 1, doacao[6])
+        elif doacao[4] == 'B' and doacao[5] == '+':
+            return incrementa_indice(oferta, 2, doacao[6])
+        elif doacao[4] == 'B' and doacao[5] == '-':
+            return incrementa_indice(oferta, 3, doacao[6])
+        elif doacao[4] == 'AB' and doacao[5] == '+':
+            return incrementa_indice(oferta, 4, doacao[6])
+        elif doacao[4] == 'AB' and doacao[5] == '-':
+            return incrementa_indice(oferta, 5, doacao[6])
+        elif doacao[4] == 'O' and doacao[5] == '+':
+            return incrementa_indice(oferta, 6, doacao[6])
+        elif doacao[4] == 'O' and doacao[5] == '-':
+            return incrementa_indice(oferta, 7, doacao[6])
+        else:
+            return oferta
+
+    # return list(reduce(incrementa_oferta, doacoes, [0]*8))
+    return list(filter(lambda x: x[3] != 0, map(lambda x: (x[0][0], x[0][1], x[1], x[0][2]), zip(demanda_tipo_sangue(requisicao, hospital), list(reduce(incrementa_oferta, doacoes, [0]*8))))))
+
+# print(tipos_sang_atendidos(req1(), 1, doac1()))
+# print(tipos_sang_atendidos(req1(), 2, doac1()))
+# print(tipos_sang_atendidos(req1(), 1, doac2()))
+
+### 6. ###
+def doadores_inaptos_nova_doacao(doacoes: list[tuple[int, str, tuple[int, int, int], tuple[int, int, int], str, str, int]], data_atual: tuple[int, int, int]) -> list[tuple[int, tuple[int, int, int], tuple[int, int, int]]]:
+    def tupla_para_date(data: tuple[int, int, int]) -> date:
+        return date(data[2], data[1], data[0])
+
+    def idade(data_atual: tuple[int, int, int], nascimento: tuple[int, int, int]) -> int:
+        return tupla_para_date(data_atual).year - tupla_para_date(nascimento).year - ((tupla_para_date(data_atual).month, tupla_para_date(data_atual).day) < (tupla_para_date(nascimento).month, tupla_para_date(nascimento).day))
+
+    return list(map(lambda x: (x[0], x[2], x[3]), filter(lambda x: idade(data_atual, x[3]) >= 60, doacoes)))
+
+# print(doadores_inaptos_nova_doacao(doac1(), (20, 1, 2021)))
+print(doadores_inaptos_nova_doacao(doac2(), (20, 1, 2021)))
