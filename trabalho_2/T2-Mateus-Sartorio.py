@@ -15,6 +15,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 # 5. Nem todas as funcoes criadas foram usadas infelizmente, pois as saidas de algumas delas acabaram ficando muito grandes e iriam poluir o arquivo de saida dos resultados.
 
 # Arquivo usado para impressao dos resultados tanto da parte 1 como da parte 2
+
 f = open('resultados.txt', 'w')
 
 
@@ -107,6 +108,7 @@ f.write('#################### PARTE 1: BASTARDOS DA CRONICA DO GELO E FOGO #####
 f.write('Bastardos: ')
 f.write(', '.join(bastardos))
 f.write('\n\n\n')
+
 
 #################### PARTE 2: FILMES ESCRITOS POR QUENTIN TARANTINO ####################
 
