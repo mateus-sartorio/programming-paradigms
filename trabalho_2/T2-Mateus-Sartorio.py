@@ -95,4 +95,29 @@ def todos_bastardos(tuplas: list[tuple[str, str, str]]) -> set[str]:
 
 bastardos = todos_bastardos(tuplas_processadas)
 
-print(bastardos)
+
+#################### PARTE 2: BASTARDOS DA CRONICA DO GELO E FOGO ####################
+
+# Query que obtem tuplas no formato (personagem, parente, conjugue)
+sparql = SPARQLWrapper("http://dbpedia.org/sparql")
+sparql.setQuery(
+    """
+    PREFIX dbo: <http://dbpedia.org/ontology/>
+    PREFIX dbr: <http://dbpedia.org/resource/>
+    PREFIX dbp: <http://dbpedia.org/property/>
+
+    SELECT DISTINCT ?filme
+    WHERE {
+        # Seleciona o URI de todos os personagens da pagina principal da CGF
+        dbr:Quentin_Tarantino_filmography dbo:wikiPageWikiLink ?filme.
+    }
+    """
+)
+
+# Configura o formato de retorno para JSON
+sparql.setReturnFormat(JSON) 
+
+# Executa a query e retorna o resultado no formato JSON
+resultado = sparql.query().convert()
+
+print(resultado)
