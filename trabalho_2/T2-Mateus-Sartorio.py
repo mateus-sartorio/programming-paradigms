@@ -150,10 +150,10 @@ resultado_tarantino = sparql.query().convert()
 # Processa a query e retorna uma lista de tuplas no formato (titulo, orcamento, lucrou, duracao, escritor, elenco) 
 def processa_query_tarantino(resultado):
     def extrai_valores(x):
-        # Converte strings para floats, e valores abaixo de 1 milhao sao multiplicados por 1 milhao pois a informacao eh implicita
+        # Converte strings para floats, e valores abaixo de 1e3 sao multiplicados por 1 milhao pois a informacao eh implicita
         def normaliza_valor_monetario(v):
             try:
-                if float(v) < 1e6:
+                if float(v) < 1e3:
                     return float(v)*1e6
                 else:
                     return float(v)
@@ -224,11 +224,15 @@ def filmes_atuados_por_ator(tuplas_processadas_tarantino):
 
 filmes_atuados_por_ator_tarantino = filmes_atuados_por_ator(tuplas_processadas_tarantino)
 
-# Retorna uma lista contendo os atores que mais atuarem em filmes em ordem decrescente de filmes atuados
-def atores_que_atuaram_em_mais_filmes(filmes_atuados_por_ator_tarantino):
-    return list(sorted(list(map(lambda x: (x[0], len(x[1])), filmes_atuados_por_ator_tarantino.items())), key=lambda x: x[1], reverse=True))
+# Retorna uma lista contendo os n atores que mais atuarem em filmes em ordem decrescente de filmes atuados
+def atores_que_atuaram_em_mais_filmes(n, filmes_atuados_por_ator_tarantino):
+    lista_atores_com_mais_papeis_temporaria =  list(sorted(list(map(lambda x: (x[0], len(x[1])), filmes_atuados_por_ator_tarantino.items())), key=lambda x: x[1], reverse=True))
+    try:
+        return lista_atores_com_mais_papeis_temporaria[0:n]
+    except:
+        return lista_atores_com_mais_papeis_temporaria
 
-atores_que_atuaram_em_mais_filmes_tarantino = atores_que_atuaram_em_mais_filmes(filmes_atuados_por_ator_tarantino)
+top_5_atores_que_atuaram_em_mais_filmes_tarantino = atores_que_atuaram_em_mais_filmes(5, filmes_atuados_por_ator_tarantino)
 
 # Retorna uma lista contendo tuplas de tuplas de atores e o conjunto de filmes em que atuaram juntos
 def aturam_juntos(filmes_atuados_por_ator_tarantino):
@@ -322,7 +326,10 @@ f.write('\n'.join(map(lambda x: f"- {x[0][0]} e {x[0][1]} - {', '.join(x[1])}", 
 )))
 f.write('\n\n')
 
-f.write('Observacao: alguns valores de vendas vieram errados da dbpedia :(\n')
+f.write('Top 5 atores que apareceram em mais filmes do Tarantino:\n')
+f.write('\n'.join(map(lambda x: f'{x[0] + 1}: {x[1][0]} - {x[1][1]}', enumerate(top_5_atores_que_atuaram_em_mais_filmes_tarantino))))
+f.write('\n\n')
+
 f.write('Orcamento medio dos filmes do Tarantino:\n')
 f.write(f'US$ {int(orcamento_medio_filmes_tarantino/1e6)} milhoes')
 f.write('\n\n')
