@@ -106,10 +106,24 @@ sparql.setQuery(
     PREFIX dbr: <http://dbpedia.org/resource/>
     PREFIX dbp: <http://dbpedia.org/property/>
 
-    SELECT DISTINCT ?filme
+    SELECT ?titulo ?orcamento ?lucrou ?duracao ?escritor ?elenco
     WHERE {
-        # Seleciona o URI de todos os personagens da pagina principal da CGF
-        dbr:Quentin_Tarantino_filmography dbo:wikiPageWikiLink ?filme.
+        dbr:Quentin_Tarantino_filmography dbo:wikiPageWikiLink ?filme_id.
+        ?filme_id dbp:name ?titulo.
+
+        optional {?filme_id dbo:budget ?orcamento.}
+        optional {?filme_id dbo:gross ?lucrou.}
+        optional {?filme_id dbo:runtime ?duracao.}
+        
+        optional {
+            ?filme_id dbo:writer ?escritor_id.
+            ?escritor_id dbo:birthName ?escritor.
+        }
+        
+        optional {
+            ?filme_id dbo:starring ?elenco_id.
+            ?elenco_id dbo:birthName ?elenco.
+        }
     }
     """
 )
@@ -118,6 +132,37 @@ sparql.setQuery(
 sparql.setReturnFormat(JSON) 
 
 # Executa a query e retorna o resultado no formato JSON
-resultado = sparql.query().convert()
+resultado_tarantino = sparql.query().convert()
 
-print(resultado)
+def processa_query_tarantino(resultado) -> list[tuple[str, str, str, str, str, str]]:
+    def extrai_valores(x):
+        def normaliza_valor_monetario(v: str) -> float:
+            try:
+                if float(v) < 1e6:
+                    return float(v)*1e6
+                else:
+                    return float(v)
+            except:
+                return float('NaN')
+
+        def normaliza_tempo(t: str):
+            try:
+                return float(t)/60
+            except:
+                return float('NaN')
+
+        return (
+            None if x.get('titulo') is None else x.get('titulo').get('value'),
+            None if x.get('orcamento') is None else normaliza_valor_monetario(x.get('orcamento').get('value')),
+            None if x.get('lucrou') is None else normaliza_valor_monetario(x.get('lucrou').get('value')),
+            None if x.get('duracao') is None else normaliza_tempo(x.get('duracao').get('value')),
+            None if x.get('escritor') is None else x.get('escritor').get('value'),
+            None if x.get('elenco') is None else x.get('elenco').get('value')
+        )
+    bindings = resultado['results']['bindings']
+    return list(map(extrai_valores, bindings))
+
+tuplas_processadas_tarantino = processa_query_tarantino(resultado_tarantino)
+
+for i in tuplas_processadas_tarantino:
+    print(i)
