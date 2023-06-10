@@ -14,8 +14,8 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 
 # 5. Nem todas as funcoes criadas foram usadas infelizmente, pois as saidas de algumas delas acabaram ficando muito grandes e iriam poluir o arquivo de saida dos resultados.
 
-# Arquivo usado para impressao dos resultados tanto da parte 1 como da parte 2
 
+# Arquivo usado para impressao dos resultados tanto da parte 1 como da parte 2
 f = open('resultados.txt', 'w')
 
 
