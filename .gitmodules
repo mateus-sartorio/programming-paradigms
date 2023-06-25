@@ -1,0 +1,3 @@
+[submodule "ruby_calculator"]
+	path = ruby_calculator
+	url = git@github.com:MateusSartorio/ruby_calculator.git
